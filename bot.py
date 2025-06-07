@@ -155,10 +155,16 @@ async def leave(ctx):
 async def on_ready():
     print(f"✅ Logged in as {bot.user}")
     try:
-        synced = await tree.sync(guild=discord.Object(id=GUILD_ID))
-        print(f"✅ Synced {len(synced)} slash commands: {[cmd.name for cmd in synced]}")
+        guild = discord.Object(id=GUILD_ID)
+        
+        # Clear all cached commands
+        await tree.sync(guild=None)  # Sync global first
+        await tree.sync(guild=guild)  # Then sync to your server
+
+        print("✅ Synced all slash commands (global + guild)")
     except Exception as e:
-        print(f"❌ Sync failed: {e}")
+        print(f"❌ Slash sync failed: {e}")
+
 
 # --- Run Bot ---
 bot.run("YOUR_BOT_TOKEN")
